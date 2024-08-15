@@ -1,10 +1,10 @@
 export const cart = [];
 
-export function addToCart(productId){
+export function addToCart(productId, quantity){
     let matchingItem = cart.find(cartItem => cartItem.productId === productId);
-    matchingItem ? matchingItem.quantity++ : cart.push({
+    matchingItem ? matchingItem.quantity += quantity : cart.push({
         productId,
-        quantity: 1
+        quantity
     });
 }
 
