@@ -1,3 +1,5 @@
+import { getProduct } from "./products.js";
+
 export const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 export function addToCart(productId, quantity){
@@ -17,4 +19,16 @@ export function calculateCartQuantity(){
     });
     
     return cartQuantity;
+}
+
+export function calculateCartPriceCents(){
+    let cartPriceCents = 0;
+    
+    cart.forEach(cartItem => {
+        const product = getProduct(cartItem.productId);
+        const totalProductPrice = product.priceCents * cartItem.quantity;
+        cartPriceCents += totalProductPrice;
+    });
+
+    return cartPriceCents;
 }
