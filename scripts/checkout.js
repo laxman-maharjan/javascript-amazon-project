@@ -1,11 +1,11 @@
-import { calculateCartQuantity } from "./data/cart.js";
+import { updateHeaderCartQuantity } from "./checkout/checkoutHeader.js";
 import { renderOrderSummary } from "./checkout/orderSummary.js";
 import { renderPaymentSummary } from "./checkout/paymentSummary.js";
 
-function updateHeaderCartQuantity(){
-  document.querySelector('.js-cart-quantity').innerText = calculateCartQuantity();
+function loadPage(){
+  updateHeaderCartQuantity();
+  renderOrderSummary();
+  renderPaymentSummary();
 }
 
-updateHeaderCartQuantity();
-renderOrderSummary();
-renderPaymentSummary();
+loadPage();
