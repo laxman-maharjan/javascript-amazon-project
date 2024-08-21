@@ -1,4 +1,4 @@
-import { cart } from "../data/cart.js";
+import { cart, removeFromCart } from "../data/cart.js";
 import { getProduct } from "../data/products.js";
 import { formatCurrency } from "../utils/money.js";
 import { updateCartItemQuantity } from "../data/cart.js";
@@ -35,7 +35,7 @@ export function renderOrderSummary(){
                     <span class="update-quantity-link link-primary js-update-quantity-link" data-product-id="${cartItem.productId}">
                       Update
                     </span>
-                    <span class="delete-quantity-link link-primary">
+                    <span class="delete-quantity-link link-primary js-delete-quantity-link" data-product-id="${cartItem.productId}">
                       Delete
                     </span>
                   </div>
@@ -109,10 +109,21 @@ function attachEventListeners(){
             }
             else if(buttonText === 'Save'){
               updateCartItemQuantity(productId, Number(quantityInputElement.value));
-              updateHeaderCartQuantity();
-              renderOrderSummary();
-              renderPaymentSummary();
+              refreshPage();
             }
         });
     });
+
+    document.querySelectorAll('.js-delete-quantity-link').forEach((button) => {
+      button.addEventListener('click', () => {
+        removeFromCart(button.dataset.productId);
+        refreshPage();
+      })
+    });
+}
+
+function refreshPage(){
+  updateHeaderCartQuantity();
+  renderOrderSummary();
+  renderPaymentSummary();
 }

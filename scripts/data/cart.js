@@ -14,7 +14,6 @@ function getCartItem(productId){
     return cart.find(cartItem => cartItem.productId === productId);
 }
 
-
 export function addToCart(productId, quantity){
     const matchingItem = getCartItem(productId);;
     matchingItem ? matchingItem.quantity += quantity : cart.push({
@@ -22,6 +21,14 @@ export function addToCart(productId, quantity){
         quantity
     });
     saveToStorage();
+}
+
+export function removeFromCart(productId){
+    const index = cart.findIndex(cartItem => cartItem.productId === productId);
+    if(index > -1){
+        cart.splice(index, 1);
+        saveToStorage();
+    }
 }
 
 export function calculateCartQuantity(){
