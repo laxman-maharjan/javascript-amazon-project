@@ -1,19 +1,22 @@
 import { cart, removeFromCart } from "../data/cart.js";
 import { getProduct } from "../data/products.js";
 import { formatCurrency } from "../utils/money.js";
-import { updateCartItemQuantity } from "../data/cart.js";
+import { updateCartItemQuantity, updateCartItemDeliveryOption } from "../data/cart.js";
 import { updateHeaderCartQuantity } from "./checkoutHeader.js";
 import { renderPaymentSummary } from "./paymentSummary.js";
+import { deliveryOptions, getDeliveryOption, calculateDeliveryDate } from "../data/deliveryOptions.js";
 
 export function renderOrderSummary(){
     let html = '';
   
     cart.forEach(cartItem => {
       const product = getProduct(cartItem.productId);
+      const deliveryOption = getDeliveryOption(cartItem.deliveryOptionId);
+      
       html += `
           <div class="cart-item-container">
               <div class="delivery-date">
-                Delivery date: Tuesday, June 21
+                Delivery date: ${calculateDeliveryDate(deliveryOption.deliveryDays)}
               </div>
   
               <div class="cart-item-details-grid">
@@ -45,45 +48,7 @@ export function renderOrderSummary(){
                   <div class="delivery-options-title">
                     Choose a delivery option:
                   </div>
-                  <div class="delivery-option">
-                    <input type="radio" checked
-                      class="delivery-option-input"
-                      name="delivery-option-1">
-                    <div>
-                      <div class="delivery-option-date">
-                        Tuesday, June 21
-                      </div>
-                      <div class="delivery-option-price">
-                        FREE Shipping
-                      </div>
-                    </div>
-                  </div>
-                  <div class="delivery-option">
-                    <input type="radio"
-                      class="delivery-option-input"
-                      name="delivery-option-1">
-                    <div>
-                      <div class="delivery-option-date">
-                        Wednesday, June 15
-                      </div>
-                      <div class="delivery-option-price">
-                        $4.99 - Shipping
-                      </div>
-                    </div>
-                  </div>
-                  <div class="delivery-option">
-                    <input type="radio"
-                      class="delivery-option-input"
-                      name="delivery-option-1">
-                    <div>
-                      <div class="delivery-option-date">
-                        Monday, June 13
-                      </div>
-                      <div class="delivery-option-price">
-                        $9.99 - Shipping
-                      </div>
-                    </div>
-                  </div>
+                  ${getDeliveryOptionsHtml(cartItem.productId, deliveryOption.id)}
                 </div>
               </div>
           </div>
@@ -94,6 +59,32 @@ export function renderOrderSummary(){
     attachEventListeners();
 }
 
+function getDeliveryOptionsHtml(productId, deliveryOptionId){
+  let html = '';
+
+  deliveryOptions.forEach(option => {
+    html += `
+      <div class="delivery-option js-delivery-option"
+       data-delivery-option-id="${option.id}" data-product-id="${productId}"
+      >
+        <input type="radio" 
+          ${option.id === deliveryOptionId ? 'checked' : ''}
+          class="delivery-option-input"
+          name="delivery-option-${productId}">
+        <div>
+          <div class="delivery-option-date">
+            ${calculateDeliveryDate(option.deliveryDays)}
+          </div>
+          <div class="delivery-option-price">
+            ${option.priceCents === 0 ? 'FREE' : `$${formatCurrency(option.priceCents)} -`} Shipping
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  return html;
+}
 
 function attachEventListeners(){
     document.querySelectorAll('.js-update-quantity-link').forEach((button) => {
@@ -114,11 +105,19 @@ function attachEventListeners(){
         });
     });
 
-    document.querySelectorAll('.js-delete-quantity-link').forEach((button) => {
+    document.querySelectorAll('.js-delete-quantity-link').forEach(button => {
       button.addEventListener('click', () => {
         removeFromCart(button.dataset.productId);
         refreshPage();
       })
+    });
+
+    document.querySelectorAll('.js-delivery-option').forEach(optionsContainer => {
+      optionsContainer.addEventListener('click', () => {
+        const {productId, deliveryOptionId} = optionsContainer.dataset;
+        updateCartItemDeliveryOption(productId, deliveryOptionId);
+        refreshPage();
+      });
     });
 }
 

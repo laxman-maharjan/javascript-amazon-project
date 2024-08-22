@@ -1,3 +1,4 @@
+import { getDeliveryOption } from "./deliveryOptions.js";
 import { getProduct } from "./products.js";
 
 export const cart = loadFromStorage();
@@ -15,12 +16,13 @@ function getCartItem(productId){
 }
 
 export function addToCart(productId, quantity){
-    const matchingItem = getCartItem(productId);;
+    const matchingItem = getCartItem(productId);
     matchingItem ? matchingItem.quantity += quantity : cart.push({
         productId,
-        quantity
+        quantity,
+        deliveryOptionId: '1'
     });
-    saveToStorage();
+    saveToStorage();            
 }
 
 export function removeFromCart(productId){
@@ -53,8 +55,25 @@ export function calculateCartPriceCents(){
     return cartPriceCents;
 }
 
+export function calculateShippingPriceCents(){
+    let shippingPriceCents = 0;
+
+    cart.forEach(cartItem => {
+        const deliveryOption = getDeliveryOption(cartItem.deliveryOptionId);
+        shippingPriceCents += deliveryOption.priceCents;
+    });
+
+    return shippingPriceCents;
+}
+
 export function updateCartItemQuantity(productId, quantity){
     const matchingItem = getCartItem(productId);
     matchingItem.quantity = quantity;
     saveToStorage();
+}
+
+export function updateCartItemDeliveryOption(productId, deliveryOptionId){
+    const matchingItem = getCartItem(productId);
+    matchingItem.deliveryOptionId = deliveryOptionId;
+    saveToStorage(); 
 }
