@@ -33,6 +33,11 @@ export function removeFromCart(productId){
     }
 }
 
+export function clearCart(){
+    cart.length = 0;
+    saveToStorage();
+}
+
 export function calculateCartQuantity(){
     let cartQuantity = 0;
 

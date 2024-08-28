@@ -1,4 +1,5 @@
-export const products = [
+//don't use this hardcoded dummy products array. Instead, fetch from api.
+export let productsObsolete = [
   {
     id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
     image: "images/products/athletic-cotton-socks-6-pairs.jpg",
@@ -658,6 +659,31 @@ export const products = [
     ]
   }
 ];
+
+export let products = loadFromStorage();
+
+function loadFromStorage(){
+  return JSON.parse(localStorage.getItem('products')) || [];
+}
+
+function saveToStorage(){
+  localStorage.setItem('products', JSON.stringify(products));
+}
+
+export async function getProducts(){
+  try{
+    const response = await fetch('https://supersimplebackend.dev/products');
+    
+    if(!response.ok){
+      throw new Error(`Response Status: ${response.status}`);
+    }
+
+    products = await response.json();
+    saveToStorage();
+  } catch(error){
+    console.log(error.message);
+  }
+}
 
 export function getProduct(productId){
   return products.find(product => product.id === productId);

@@ -151,6 +151,25 @@
   margin-right: 15px;
 }
 
+.rebuy-not-clicked,
+.rebuy-clicked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rebuy-clicked {
+  display: none;
+}
+
+.make-visible {
+  display: initial;
+}
+
+.make-invisible {
+  display: none;
+}
+
 .product-actions {
   align-self: start;
 }
